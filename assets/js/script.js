@@ -50,14 +50,14 @@
   });
 
   // Contact form stub
-  const form = document.getElementById('contact-form');
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Thanks! Message captured (this is a demo). Replace with your backend or email handler.');
-      form.reset();
-    });
-  }
+  // const form = document.getElementById('contact-form');
+  // if (form) {
+  //   form.addEventListener('submit', (e) => {
+  //     e.preventDefault();
+  //     alert('Thanks! Message captured (this is a demo). Replace with your backend or email handler.');
+  //     form.reset();
+  //   });
+  // }
 
   // Theme toggle with memory (class-based, supports multiple buttons)
   const lightThemeLink = document.querySelector('link[href="assets/css/light.css"]');
@@ -82,3 +82,43 @@
     });
   });
 })();
+
+
+const form = document.getElementById('contact-form');
+
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = new FormData(form);
+    const response = await fetch(form.action, {
+      method: form.method,
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    const oldMsg = document.querySelector(".form-message");
+    if (oldMsg) oldMsg.remove();
+
+    const messageBox = document.createElement('p');
+    messageBox.classList.add("form-message");
+    messageBox.style.marginTop = "1rem";
+    messageBox.style.color = "#fff";
+    messageBox.style.fontWeight = "bold";
+
+    if (response.ok) {
+      messageBox.textContent = "✅ Message sent successfully!";
+      form.reset();
+    } else {
+      messageBox.textContent = "❌ Something went wrong. Please try again.";
+    }
+
+    form.appendChild(messageBox);
+
+    setTimeout(() => {
+      messageBox.style.transition = "opacity 1s";
+      messageBox.style.opacity = "0";
+      setTimeout(() => messageBox.remove(), 1000);
+    }, 5000);
+  });
+}
